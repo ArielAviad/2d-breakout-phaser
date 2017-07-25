@@ -8,6 +8,8 @@ var cursors;
 var brickInfo;
 var scoreText;
 var score;
+var gameOver = false;
+var gameOverText = "";
 
 function loadImges() {
     game.load.image('ball', 'imgs/ball.png');
@@ -21,20 +23,13 @@ function preload() {
     game.scale.pageAlignVertically = true;
     game.stage.backgroundColor = '#eee';
     loadImges();
-    scoreText = game.add.text(5,5,'Point: 0', {
-        font: '18px Ariel',fill: 'white'
-    });
-    score = 0;
 }
 
 function endGameRoles() {
     //set end game
     game.physics.arcade.checkCollision.down = false;
     ball.checkWorldBounds = true;
-    ball.events.onOutOfBounds.add(function () {
-        alert('Game Over');
-        location.reload();
-    }, this);
+    ball.events.onOutOfBounds.add(gameOverFun,this);
 }
 
 function initBricks() {
@@ -90,23 +85,43 @@ function create() {
 
     initBricks();
     endGameRoles.call(this);
+
+    scoreText = game.add.text(5,5,'Points: 0', {
+        font: '18px Ariel',fill: 'black'
+    });
+    gameOverText = game.add.text(game.world.centerX,game.world.centerY, "",{
+        font: '18px Ariel',fill: 'black'
+    });
+    score = 0;
+
+}
+
+function gameOverFun() {
+    game.paused = true;
+    gameOverText.setText("Game Over");
 }
 
 function ballHitBrick(ball, brick) {
     brick.kill();
     score += 10;
     scoreText.setText("Points: " + score);
+
+    var countAlive = 0;
+    if(bricks.children.filter(function (brick) {
+            return brick.alive;
+        }).length == 0){
+        gameOverFun();
+    }
 }
 
 function update() {
     //Enable physics between the paddle and the ball
-    game.physics.arcade.collide(paddle,ball);
-    game.physics.arcade.collide(ball,bricks,ballHitBrick);
-
+    game.physics.arcade.collide(paddle, ball);
+    game.physics.arcade.collide(ball, bricks, ballHitBrick);
+    paddleControl();
 }
 
 function paddleControl() {
-
     if (cursors.left.isDown) {
         paddle.body.velocity.x = -300;
     }
