@@ -10,6 +10,7 @@ var scoreText;
 var score;
 var gameOver = false;
 var gameOverText = "";
+var textStyle = { font: '18px Arial', fill: '#0095DD' };
 
 function loadImges() {
     game.load.image('ball', 'imgs/ball.png');
@@ -22,6 +23,7 @@ function preload() {
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
     game.stage.backgroundColor = '#eee';
+    this.lives = 3;
     loadImges();
 }
 
@@ -89,16 +91,34 @@ function create() {
     scoreText = game.add.text(5,5,'Points: 0', {
         font: '18px Ariel',fill: 'black'
     });
-    gameOverText = game.add.text(game.world.centerX,game.world.centerY, "",{
-        font: '18px Ariel',fill: 'black'
-    });
-    score = 0;
+    this.liveLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Life lost, click to continue', textStyle);
+    this.liveLostText.anchor.set(0.5);
+    this.liveLostText.visible = false;
 
+    gameOverText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Game Over', textStyle);
+    gameOverText.anchor.set(0.5);
+    gameOverText.visible = false;
+    score = 0;
+    this.livesText = game.add.text(game.world.width-5,5, "lives: 3",{
+        font: '18px Ariel',fill: 'black'});
+    this.livesText.anchor.set(1,0);
 }
 
 function gameOverFun() {
-    game.paused = true;
-    gameOverText.setText("Game Over");
+    this.lives--;
+    this.livesText.setText("lives: " + this.lives);
+    if(this.lives <= 0) {
+        game.paused = true;
+        gameOverText.visible = true;
+    }else{
+        this.liveLostText.visible = true;
+        ball.reset(game.world.width*0.5,game.world.height-25);
+        paddle.reset(game.world.width*0.5, game.world.height-5);
+        game.input.onDown.addOnce(function(){
+            this.liveLostText.visible = false;
+            ball.body.velocity.set(150, -150);
+        }, this);
+    }
 }
 
 function ballHitBrick(ball, brick) {
