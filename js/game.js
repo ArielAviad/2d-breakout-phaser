@@ -89,7 +89,7 @@ function create() {
 function update() {
     //Enable physics between the paddle and the ball
     game.physics.arcade.collide(paddle,ball);
-
+    game.physics.arcade.collide(ball,bricks);
 
 }
 
