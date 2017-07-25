@@ -1,5 +1,6 @@
 
-var game = new Phaser.Game(480, 320, Phaser.AUTO, null, {preload: preload, create: create, update: update});
+var game = new Phaser.Game(480, 320, Phaser.AUTO, null, 
+    {preload: preload, create: create, update: update,render: render});
 
 var ball;
 
@@ -13,10 +14,21 @@ function preload() {
 
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    ball = game.add.sprite(50, 50, 'ball');
+    //set start location and img.
+    ball = game.add.sprite(100, 100, 'ball');
+    //  Enable Arcade Physics for the ball
     game.physics.enable(ball,Phaser.Physics.ARCADE);
-    ball.body.velocity.set(50,50);
+    //set gravity for x and y
+    ball.body.velocity.set(100,100);
+    //make the ball bounce-able
+    ball.body.collideWorldBounds = true;
+    //1 is 100% energy
+    ball.body.bounce.setTo(1,1);
 }
 
 function update() {
+}
+
+function render() {
+    game.debug.spriteInfo(ball,32,32);
 }
