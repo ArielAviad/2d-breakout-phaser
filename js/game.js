@@ -23,16 +23,19 @@ function create() {
 
     cursors = game.input.keyboard.createCursorKeys();
     //set start location and img.
-    ball = game.add.sprite(100, 100, 'ball');
+    ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
     paddle = game.add.sprite(game.world.width*0.5,game.world.height-5,
                                 'paddle');
+    //set on the buttom middle;
+    ball.anchor.set(0.5);
+    paddle.anchor.set(0.5,1);
     //  Enable Arcade Physics for the ball
     game.physics.enable([paddle, ball],Phaser.Physics.ARCADE);
 
     paddle.body.immovable = true;
 
     //set gravity for x and y
-    ball.body.velocity.set(100,100);
+    ball.body.velocity.set(150,-150);
     //make the ball bounce-able
     ball.body.collideWorldBounds = true;
     //1 is 100% energy
@@ -46,20 +49,24 @@ function update() {
 
 }
 
-function render() {
-    game.debug.spriteInfo(ball,32,32);
+function paddleControl() {
 
-    if (cursors.left.isDown)
-    {
+    if (cursors.left.isDown) {
         paddle.body.velocity.x = -300;
     }
-    else if (cursors.right.isDown)
-    {
+    else if (cursors.right.isDown) {
         paddle.body.velocity.x = 300;
     }
-    else
-    {
+    /*else if(game.input.x){
+        paddle.x = game.input.x;
+    }*/
+    else {
         paddle.body.velocity.setTo(0, 0);
     }
+}
+
+function render() {
+    game.debug.spriteInfo(ball,32,32);
+    paddleControl();
 
 }
