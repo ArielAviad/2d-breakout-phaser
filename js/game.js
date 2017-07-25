@@ -12,7 +12,7 @@ var gameOver = false;
 var gameOverText = "";
 var textStyle = { font: '18px Arial', fill: '#0095DD' };
 var lives;
-var animation;
+var brickScore = 10;
 
 function loadImges() {
     game.load.image('ball', 'imgs/ball.png');
@@ -129,16 +129,22 @@ function gameOverFun() {
     }
 }
 
+function killBrickWithAnimation(brick) {
+    var killTween = game.add.tween(brick.scale);
+    killTween.to({x: 0, y: 0}, 200, Phaser.Easing.Linear.None);
+    killTween.onComplete.addOnce(function () {
+        brick.kill();
+    }, this);
+    killTween.start();
+}
 function ballHitBrick(ball, brick) {
     ball.animations.play('wobble');
-    brick.kill();
-    score += 10;
+    killBrickWithAnimation.call(this, brick);
+
+    score += brickScore;
     scoreText.setText("Points: " + score);
 
-    var countAlive = 0;
-    if(bricks.children.filter(function (brick) {
-            return brick.alive;
-        }).length == 0){
+    if(score == brickInfo.count.row*brickInfo.count.col*brickScore){
         gameOver = true;
         gameOverFun();
     }
