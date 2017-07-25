@@ -18,6 +18,16 @@ function preload() {
     loadImges();
 }
 
+function endGameRoles() {
+    //set end game
+    game.physics.arcade.checkCollision.down = false;
+    ball.checkWorldBounds = true;
+    ball.events.onOutOfBounds.add(function () {
+        alert('Game Over');
+        location.reload();
+    }, this);
+}
+
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -40,6 +50,7 @@ function create() {
     ball.body.collideWorldBounds = true;
     //1 is 100% energy
     ball.body.bounce.setTo(1,1);
+    endGameRoles.call(this);
 }
 
 function update() {
