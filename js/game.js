@@ -11,11 +11,14 @@ var score;
 var gameOver = false;
 var gameOverText = "";
 var textStyle = { font: '18px Arial', fill: '#0095DD' };
+var lives;
+var animation;
 
 function loadImges() {
     game.load.image('ball', 'imgs/ball.png');
     game.load.image('paddle', 'imgs/paddle.png');
     game.load.image('brick', 'imgs/brick.png');
+    game.load.spritesheet('ball','imgs/wobble.png',20,20);
 }
 
 function preload() {
@@ -23,7 +26,7 @@ function preload() {
     game.scale.pageAlignHorizontally = true;
     game.scale.pageAlignVertically = true;
     game.stage.backgroundColor = '#eee';
-    this.lives = 3;
+    lives = 3;
     loadImges();
 }
 
@@ -70,6 +73,9 @@ function create() {
     ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
     paddle = game.add.sprite(game.world.width*0.5,game.world.height-5,
                                 'paddle');
+
+    ball.animations.add('wobble', [0,1,0,2,0,1,0,2,0], 24);
+
     //set on the buttom middle;
     ball.anchor.set(0.5);
     paddle.anchor.set(0.5);
@@ -91,37 +97,40 @@ function create() {
     scoreText = game.add.text(5,5,'Points: 0', {
         font: '18px Ariel',fill: 'black'
     });
-    this.liveLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Life lost, click to continue', textStyle);
-    this.liveLostText.anchor.set(0.5);
-    this.liveLostText.visible = false;
+    liveLostText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Life lost, click to continue', textStyle);
+    liveLostText.anchor.set(0.5);
+    liveLostText.visible = false;
 
     gameOverText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Game Over', textStyle);
     gameOverText.anchor.set(0.5);
     gameOverText.visible = false;
     score = 0;
-    this.livesText = game.add.text(game.world.width-5,5, "lives: 3",{
+    livesText = game.add.text(game.world.width-5,5, "lives: 3",{
         font: '18px Ariel',fill: 'black'});
-    this.livesText.anchor.set(1,0);
+    livesText.anchor.set(1,0);
 }
 
 function gameOverFun() {
-    this.lives--;
-    this.livesText.setText("lives: " + this.lives);
-    if(this.lives <= 0) {
+    if(!gameOver) {
+        lives -= 1;
+    }
+    livesText.setText("lives: " + lives);
+    if(lives <= 0 || gameOver) {
         game.paused = true;
         gameOverText.visible = true;
     }else{
-        this.liveLostText.visible = true;
+        liveLostText.visible = true;
         ball.reset(game.world.width*0.5,game.world.height-25);
         paddle.reset(game.world.width*0.5, game.world.height-5);
         game.input.onDown.addOnce(function(){
-            this.liveLostText.visible = false;
+            liveLostText.visible = false;
             ball.body.velocity.set(150, -150);
         }, this);
     }
 }
 
 function ballHitBrick(ball, brick) {
+    ball.animations.play('wobble');
     brick.kill();
     score += 10;
     scoreText.setText("Points: " + score);
@@ -130,14 +139,19 @@ function ballHitBrick(ball, brick) {
     if(bricks.children.filter(function (brick) {
             return brick.alive;
         }).length == 0){
+        gameOver = true;
         gameOverFun();
     }
 }
 
+function ballHitPaddle(ball, paddle) {
+    ball.animations.play('wobble');
+}
+
 function update() {
     //Enable physics between the paddle and the ball
-    game.physics.arcade.collide(paddle, ball);
-    game.physics.arcade.collide(ball, bricks, ballHitBrick);
+    game.physics.arcade.collide(paddle, ball,ballHitPaddle);
+    game.physics.arcade.collide(ball, bricks,ballHitBrick);
     paddleControl();
 }
 
