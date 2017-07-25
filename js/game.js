@@ -1,11 +1,13 @@
 
 var game = new Phaser.Game(480, 320, Phaser.AUTO, null, 
-    {preload: preload, create: create, update: update,render: render});
+    {preload: preload, create: create, update: update/*,render: render*/});
 
 var ball;
 var paddle;
 var cursors;
 var brickInfo;
+var scoreText;
+var score;
 
 function loadImges() {
     game.load.image('ball', 'imgs/ball.png');
@@ -19,6 +21,10 @@ function preload() {
     game.scale.pageAlignVertically = true;
     game.stage.backgroundColor = '#eee';
     loadImges();
+    scoreText = game.add.text(5,5,'Point: 0', {
+        font: '18px Ariel',fill: 'white'
+    });
+    score = 0;
 }
 
 function endGameRoles() {
@@ -88,6 +94,8 @@ function create() {
 
 function ballHitBrick(ball, brick) {
     brick.kill();
+    score += 10;
+    scoreText.setText("Points: " + score);
 }
 
 function update() {
@@ -113,8 +121,9 @@ function paddleControl() {
     }
 }
 
-function render() {
-    game.debug.spriteInfo(ball,32,32);
-    paddleControl();
-
-}
+// function render() {
+//     if(debug==1) {
+//         game.debug.spriteInfo(ball, 32, 32);
+//         paddleControl();
+//     }
+// }
