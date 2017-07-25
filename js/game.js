@@ -15,7 +15,7 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     ball = game.add.sprite(50, 50, 'ball');
     game.physics.enable(ball,Phaser.Physics.ARCADE);
-    ball.physics.velocity.set(150,150);
+    ball.body.velocity.set(50,50);
 }
 
 function update() {
