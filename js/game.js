@@ -13,12 +13,16 @@ var gameOverText = "";
 var textStyle = { font: '18px Arial', fill: '#0095DD' };
 var lives;
 var brickScore = 10;
+var playing = false;
+var startButton;
+var bricks;
 
 function loadImges() {
     game.load.image('ball', 'imgs/ball.png');
     game.load.image('paddle', 'imgs/paddle.png');
     game.load.image('brick', 'imgs/brick.png');
     game.load.spritesheet('ball','imgs/wobble.png',20,20);
+    game.load.spritesheet('startButton','imgs/button.png',120,40);
 }
 
 function preload() {
@@ -65,6 +69,12 @@ function initBricks() {
     }
 }
 
+function startGame() {
+    startButton.destroy();
+    ball.body.velocity.set(150,-150);
+    playing = true;
+}
+
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -73,6 +83,10 @@ function create() {
     ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
     paddle = game.add.sprite(game.world.width*0.5,game.world.height-5,
                                 'paddle');
+
+    startButton = game.add.button(game.world.width*0.5,game.world.height*0.5,
+        'startButton',startGame,this,[1,0,2]);
+    startButton.anchor.set(0.5);
 
     ball.animations.add('wobble', [0,1,0,2,0,1,0,2,0], 24);
 
@@ -84,8 +98,6 @@ function create() {
 
     paddle.body.immovable = true;
 
-    //set gravity for x and y
-    ball.body.velocity.set(150,-150);
     //make the ball bounce-able
     ball.body.collideWorldBounds = true;
     //1 is 100% energy
@@ -108,6 +120,7 @@ function create() {
     livesText = game.add.text(game.world.width-5,5, "lives: 3",{
         font: '18px Ariel',fill: 'black'});
     livesText.anchor.set(1,0);
+
 }
 
 function gameOverFun() {
@@ -158,7 +171,9 @@ function update() {
     //Enable physics between the paddle and the ball
     game.physics.arcade.collide(paddle, ball,ballHitPaddle);
     game.physics.arcade.collide(ball, bricks,ballHitBrick);
-    paddleControl();
+    if(playing) {
+        paddleControl();
+    }
 }
 
 function paddleControl() {
