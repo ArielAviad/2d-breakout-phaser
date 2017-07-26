@@ -16,6 +16,7 @@ var brickScore = 10;
 var playing = false;
 var startButton;
 var bricks;
+var stopButton;
 
 function loadImges() {
     game.load.image('ball', 'imgs/ball.png');
@@ -71,6 +72,7 @@ function initBricks() {
 
 function startGame() {
     startButton.destroy();
+    startButton = null;
     ball.body.velocity.set(150,-150);
     playing = true;
 }
@@ -114,6 +116,10 @@ function create() {
     liveLostText.anchor.set(0.5);
     liveLostText.visible = false;
 
+    pauseText = game.add.text(game.world.width*0.5,game.world.height*0.5, 'PAUSE, click to continue', textStyle);
+    pauseText.anchor.set(0.5);
+    pauseText.visible = false;
+
     gameOverText = game.add.text(game.world.width*0.5, game.world.height*0.5, 'Game Over', textStyle);
     gameOverText.anchor.set(0.5);
     gameOverText.visible = false;
@@ -121,11 +127,13 @@ function create() {
     livesText = game.add.text(game.world.width-5,5, "lives: 3",{
         font: '18px Ariel',fill: 'black'});
     livesText.anchor.set(1,0);
+
+    stopButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 
 function gameOverFun() {
     if(!gameOver) {
-        lives -= 1;
+        lives = lives-1;
     }
     livesText.setText("lives: " + lives);
     if(lives <= 0 || gameOver) {
@@ -171,12 +179,27 @@ function ballHitPaddle(ball, paddle) {
     ball.body.velocity.x = -1*5*(paddle.x-ball.x);
 }
 
+var x = -1,y = -1;
 function update() {
     //Enable physics between the paddle and the ball
     game.physics.arcade.collide(paddle, ball,ballHitPaddle);
     game.physics.arcade.collide(ball, bricks,ballHitBrick);
     if(playing) {
         paddleControl();
+    }else if (stopButton.isDown && x == -1){
+        playing = false;
+        pauseText.visible = true;
+        x = ball.body.velocity.x;
+        y = ball.body.velocity.y;
+        ball.body.velocity.set(0);
+        paddle.body.velocity.setTo(0,0);
+        game.input.onDown.addOnce(function(){
+            pauseText.visible = false;
+            playing = true;
+            ball.body.velocity.set(x, y);
+            x = y = -1;
+        }, this);
+
     }
 }
 
@@ -186,10 +209,8 @@ function paddleControl() {
     }
     else if (cursors.right.isDown) {
         paddle.body.velocity.x = 300;
-    }
-    /*else if(game.input.x){
-        paddle.x = game.input.x;
-    }*/
+    }else if (stopButton.isDown)
+        playing = false;
     else {
         paddle.body.velocity.setTo(0, 0);
     }
