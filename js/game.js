@@ -132,11 +132,13 @@ function gameOverFun() {
         game.paused = true;
         gameOverText.visible = true;
     }else{
+        playing = false;
         liveLostText.visible = true;
         ball.reset(game.world.width*0.5,game.world.height-25);
         paddle.reset(game.world.width*0.5, game.world.height-5);
         game.input.onDown.addOnce(function(){
             liveLostText.visible = false;
+            playing = true;
             ball.body.velocity.set(150, -150);
         }, this);
     }
