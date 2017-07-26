@@ -83,6 +83,7 @@ function create() {
     ball = game.add.sprite(game.world.width*0.5, game.world.height-25, 'ball');
     paddle = game.add.sprite(game.world.width*0.5,game.world.height-5,
                                 'paddle');
+    ball.events.onOutOfBounds.add(gameOverFun,this);
 
     startButton = game.add.button(game.world.width*0.5,game.world.height*0.5,
         'startButton',startGame,this,[1,0,2]);
@@ -97,7 +98,7 @@ function create() {
     game.physics.enable([paddle, ball],Phaser.Physics.ARCADE);
 
     paddle.body.immovable = true;
-
+    paddle.body.collideWorldBounds = true;
     //make the ball bounce-able
     ball.body.collideWorldBounds = true;
     //1 is 100% energy
@@ -120,7 +121,6 @@ function create() {
     livesText = game.add.text(game.world.width-5,5, "lives: 3",{
         font: '18px Ariel',fill: 'black'});
     livesText.anchor.set(1,0);
-
 }
 
 function gameOverFun() {
@@ -150,6 +150,7 @@ function killBrickWithAnimation(brick) {
     }, this);
     killTween.start();
 }
+
 function ballHitBrick(ball, brick) {
     ball.animations.play('wobble');
     killBrickWithAnimation.call(this, brick);
