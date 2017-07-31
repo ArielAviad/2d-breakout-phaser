@@ -178,6 +178,7 @@ function ballHitBrick(ball, brick) {
     scoreText.setText("Points: " + score);
 
     if(score == brickInfo.count.row*brickInfo.count.col*brickScore){
+        brick.kill();
         gameOver = true;
         gameOverFun();
     }
