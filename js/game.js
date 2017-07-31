@@ -76,8 +76,10 @@ function startGame() {
 }
 
 function changeGameStat(toPause) {
-    pauseText.visible = toPause;
-    game.paused = toPause;
+    if(!livesText.visible) {
+        pauseText.visible = toPause;
+        game.paused = toPause;
+    }
 }
 
 function create() {
