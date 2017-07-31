@@ -60,7 +60,7 @@ function initBricks() {
         for(var r = 0;r<brickInfo.count.row;++r){
             var brickX = (r*(brickInfo.width+brickInfo.padding))+brickInfo.offset.left;
             var brickY = (c*(brickInfo.height+brickInfo.padding))+brickInfo.offset.top;
-            newBrick = game.add.sprite(brickX,brickY,'brick');
+            var newBrick = game.add.sprite(brickX,brickY,'brick');
             game.physics.enable(newBrick, Phaser.Physics.ARCADE);
             newBrick.body.immovable = true;
             newBrick.anchor.set(0.5);
@@ -144,9 +144,11 @@ function gameOverFun() {
     if(!gameOver) {
         lives = lives-1;
     }
-    livesText.setText("lives: " + lives);
+    livesText.setText("lives: " + lives.toString());
     if(lives <= 0 || gameOver) {
         game.paused = true;
+        if(score == brickInfo.count.row*brickInfo.count.col*brickScore)
+            gameOverText.setText("you won!");
         gameOverText.visible = true;
     }else{
         playing = false;
